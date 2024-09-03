@@ -62,6 +62,7 @@ cc_library(
         "//mediapipe/tasks/cc/core:model_task_graph",
         "//mediapipe/tasks/cc/vision/face_landmarker/proto:face_blendshapes_graph_options_cc_proto",
     ],
+    visibility = ["//visibility:public"],
     alwayslink = 1,
 )
 

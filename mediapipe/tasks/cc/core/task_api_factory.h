@@ -78,18 +78,11 @@ class TaskApiFactory {
     }
     MP_ASSIGN_OR_RETURN(
         auto runner,
-#if !MEDIAPIPE_DISABLE_GPU
         core::TaskRunner::Create(std::move(graph_config), std::move(resolver),
                                  std::move(packets_callback),
                                  std::move(default_executor),
                                  std::move(input_side_packets),
                                  /*resources=*/nullptr, std::move(error_fn)));
-#else
-        core::TaskRunner::Create(
-            std::move(graph_config), std::move(resolver),
-            std::move(packets_callback), std::move(default_executor),
-            std::move(input_side_packets), std::move(error_fn)));
-#endif
     return std::make_unique<T>(std::move(runner));
   }
 

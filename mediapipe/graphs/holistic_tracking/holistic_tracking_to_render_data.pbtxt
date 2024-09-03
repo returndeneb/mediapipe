@@ -15,8 +15,18 @@ input_stream: "RIGHT_HAND_LANDMARKS:right_hand_landmarks"
 # Face landmarks. (NormalizedLandmarkList)
 input_stream: "FACE_LANDMARKS:face_landmarks"
 
+input_stream: "FACE_BLENDSHAPES:face_blendshapes"
+
 # Render data vector. (std::vector<RenderData>)
 output_stream: "RENDER_DATA_VECTOR:render_data_vector"
+
+
+
+node{
+  calculator: "FaceBlendshapesPrinter"
+  input_stream: "FACE_BLENDSHAPES:face_blendshapes"
+}
+
 
 # --------------------------------------------------------------------------- #
 # ------------------ Calculates scale for render objects -------------------- #

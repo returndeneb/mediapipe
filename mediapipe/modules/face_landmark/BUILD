@@ -174,6 +174,18 @@ mediapipe_simple_subgraph(
 )
 
 mediapipe_simple_subgraph(
+    name = "face_blendshape_model_loader",
+    graph = "face_blendshape_model_loader.pbtxt",
+    register_as = "FaceBlendshapeModelLoader",
+    deps = [
+        "//mediapipe/calculators/core:constant_side_packet_calculator",
+        "//mediapipe/calculators/tflite:tflite_model_calculator",
+        "//mediapipe/calculators/util:local_file_contents_calculator",
+        "//mediapipe/framework/tool:switch_container",
+    ],
+)
+
+mediapipe_simple_subgraph(
     name = "tensors_to_face_landmarks",
     graph = "tensors_to_face_landmarks.pbtxt",
     register_as = "TensorsToFaceLandmarks",

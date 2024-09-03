@@ -36,26 +36,9 @@ mediapipe_simple_subgraph(
         "//mediapipe/calculators/util:landmarks_to_render_data_calculator",
         "//mediapipe/calculators/util:rect_to_render_data_calculator",
         "//mediapipe/calculators/util:rect_to_render_scale_calculator",
+        "//mediapipe/calculators/util:face_blendshapes_printer",
         "//mediapipe/modules/holistic_landmark:hand_wrist_for_pose",
     ],
-)
-
-cc_library(
-    name = "holistic_tracking_gpu_deps",
-    deps = [
-        ":holistic_tracking_to_render_data",
-        "//mediapipe/calculators/core:flow_limiter_calculator",
-        "//mediapipe/calculators/image:image_properties_calculator",
-        "//mediapipe/calculators/util:annotation_overlay_calculator",
-        "//mediapipe/modules/holistic_landmark:holistic_landmark_gpu",
-    ],
-)
-
-mediapipe_binary_graph(
-    name = "holistic_tracking_gpu",
-    graph = "holistic_tracking_gpu.pbtxt",
-    output_name = "holistic_tracking_gpu.binarypb",
-    deps = [":holistic_tracking_gpu_deps"],
 )
 
 cc_library(
@@ -65,6 +48,8 @@ cc_library(
         "//mediapipe/calculators/core:flow_limiter_calculator",
         "//mediapipe/calculators/image:image_properties_calculator",
         "//mediapipe/calculators/util:annotation_overlay_calculator",
+        "//mediapipe/calculators/core:constant_side_packet_calculator",
         "//mediapipe/modules/holistic_landmark:holistic_landmark_cpu",
+        
     ],
 )

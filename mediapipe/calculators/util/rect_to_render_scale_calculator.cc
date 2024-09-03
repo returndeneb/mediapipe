@@ -53,18 +53,7 @@ using ::mediapipe::NormalizedRect;
 //   RENDER_SCALE: Float value that should be used to scale RenderData
 //     primitives calculated as `rect_size * multiplier`.
 //
-// Example config:
-//   node {
-//     calculator: "RectToRenderScaleCalculator"
-//     input_stream: "NORM_RECT:pose_landmarks_rect"
-//     input_stream: "IMAGE_SIZE:image_size"
-//     output_stream: "RENDER_SCALE:render_scale"
-//     options: {
-//       [mediapipe.RectToRenderScaleCalculatorOptions.ext] {
-//         multiplier: 0.001
-//       }
-//     }
-//   }
+
 class RectToRenderScaleCalculator : public CalculatorBase {
  public:
   static absl::Status GetContract(CalculatorContract* cc);

@@ -37,8 +37,23 @@ node {
 }
 
 node {
+  calculator: "ConstantSidePacketCalculator"
+  output_side_packet: "PACKET:0:refine_face_landmarks"
+  output_side_packet: "PACKET:1:model_complexity"
+  node_options: {
+    [type.googleapis.com/mediapipe.ConstantSidePacketCalculatorOptions]: {
+      packet { bool_value: true }
+      packet { int_value: 0 }
+    }
+  }
+}
+
+
+
+node {
   calculator: "HolisticLandmarkCpu"
   input_stream: "IMAGE:throttled_input_video"
+  input_side_packet: "REFINE_FACE_LANDMARKS:refine_face_landmarks"
   output_stream: "POSE_LANDMARKS:pose_landmarks"
   output_stream: "POSE_ROI:pose_roi"
   output_stream: "POSE_DETECTION:pose_detection"
@@ -63,6 +78,7 @@ node {
   input_stream: "LEFT_HAND_LANDMARKS:left_hand_landmarks"
   input_stream: "RIGHT_HAND_LANDMARKS:right_hand_landmarks"
   input_stream: "FACE_LANDMARKS:face_landmarks"
+  input_stream: "FACE_BLENDSHAPES:face_blendshapes"
   output_stream: "RENDER_DATA_VECTOR:render_data_vector"
 }
 
@@ -72,4 +88,21 @@ node {
   input_stream: "IMAGE:throttled_input_video"
   input_stream: "VECTOR:render_data_vector"
   output_stream: "IMAGE:output_video"
+}
+
+node {
+  calculator: "mediapipe.tasks.vision.face_landmarker.FaceBlendshapesGraph"
+  input_stream: "LANDMARKS:face_landmarks"
+  input_stream: "IMAGE_SIZE:image_size"
+  output_stream: "BLENDSHAPES:face_blendshapes"
+  options {
+    [mediapipe.tasks.vision.face_landmarker.proto.FaceBlendshapesGraphOptions.ext]
+    {
+      base_options {
+        model_asset {
+          file_name: "face_blendshapes.tflite"
+        }
+      }
+    }
+  }
 }

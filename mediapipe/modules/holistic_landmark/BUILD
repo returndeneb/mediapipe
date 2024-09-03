@@ -54,8 +54,10 @@ mediapipe_simple_subgraph(
         "//mediapipe/calculators/image:image_properties_calculator",
         "//mediapipe/modules/face_detection:face_detection_short_range_by_roi_cpu",
         "//mediapipe/modules/face_landmark:face_landmark_cpu",
+        "//mediapipe/tasks/cc/vision/face_landmarker:face_blendshapes_graph",
     ],
 )
+
 
 mediapipe_simple_subgraph(
     name = "face_landmarks_to_roi",

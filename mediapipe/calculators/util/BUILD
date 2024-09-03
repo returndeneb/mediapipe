@@ -795,6 +795,27 @@ cc_library(
     alwayslink = 1,
 )
 
+cc_library(
+    name = "face_blendshapes_printer",
+    srcs = ["face_blendshapes_printer.cc"],
+    deps = [
+        "//mediapipe/framework:calculator_framework", 
+        "//mediapipe/framework/formats:classification_cc_proto",  
+    ],
+    alwayslink = 1,
+)
+
+proto_library(
+    name = "classification_proto",
+    srcs = ["classification.proto"],
+)
+
+cc_proto_library(
+    name = "classification_cc_proto",
+    deps = [":classification_proto"],
+)
+
+
 cc_test(
     name = "detections_to_render_data_calculator_test",
     size = "small",

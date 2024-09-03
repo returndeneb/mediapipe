@@ -20,6 +20,7 @@
 
 type: "FaceLandmarkCpu"
 
+
 # CPU image. (ImageFrame)
 input_stream: "IMAGE:image"
 # ROI (region of interest) within the given image where a face is located.
