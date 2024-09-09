@@ -106,3 +106,10 @@ node {
     }
   }
 }
+
+node {
+  calculator: "CheekCropCalculator"
+  input_stream : "LANDMARKS:face_landmarks"
+  input_stream : "IMAGE:throttled_input_video"
+  output_stream : "IMAGE:cropped_cheek_image"
+}

@@ -18,6 +18,9 @@ licenses(["notice"])
 
 package(default_visibility = ["//visibility:public"])
 
+
+
+
 mediapipe_proto_library(
     name = "opencv_image_encoder_calculator_proto",
     srcs = ["opencv_image_encoder_calculator.proto"],
@@ -82,6 +85,32 @@ mediapipe_proto_library(
         "//mediapipe/framework:calculator_proto",
     ],
 )
+
+
+
+cc_library(
+    name = "cheek_crop_calculator",
+    srcs = ["cheek_crop_calculator.cc"],
+    hdrs = ["cheek_crop_calculator.h"],
+    deps = [
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework/formats:landmark_cc_proto",
+        "//mediapipe/framework/formats:image_frame_opencv",
+        "//mediapipe/framework/port:opencv_core",
+        "//mediapipe/framework/port:opencv_imgproc",
+        "//mediapipe/framework/port:ret_check",
+        "//mediapipe/framework/port:status",
+        "@com_google_absl//absl/log:absl_log",
+    ] + select({
+        "//mediapipe/gpu:disable_gpu": [],
+        "//conditions:default": [
+            "//mediapipe/gpu:gl_calculator_helper",
+            "//mediapipe/gpu:gpu_buffer",
+        ],
+    }),
+    alwayslink = 1,
+)
+
 
 cc_library(
     name = "color_convert_calculator",

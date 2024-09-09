@@ -54,7 +54,7 @@ mediapipe_simple_subgraph(
         "//mediapipe/calculators/image:image_properties_calculator",
         "//mediapipe/modules/face_detection:face_detection_short_range_by_roi_cpu",
         "//mediapipe/modules/face_landmark:face_landmark_cpu",
-        "//mediapipe/tasks/cc/vision/face_landmarker:face_blendshapes_graph",
+        
     ],
 )
 
@@ -268,5 +268,7 @@ mediapipe_simple_subgraph(
         "//mediapipe/calculators/core:flow_limiter_calculator",
         "//mediapipe/calculators/image:image_transformation_calculator",
         "//mediapipe/modules/pose_landmark:pose_landmark_cpu",
+        "//mediapipe/tasks/cc/vision/face_landmarker:face_blendshapes_graph",
+        "//mediapipe/calculators/image:cheek_crop_calculator",
     ],
 )

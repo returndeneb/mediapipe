@@ -50,6 +50,7 @@ cc_library(
         "//mediapipe/calculators/util:annotation_overlay_calculator",
         "//mediapipe/calculators/core:constant_side_packet_calculator",
         "//mediapipe/modules/holistic_landmark:holistic_landmark_cpu",
+       
         
     ],
 )
