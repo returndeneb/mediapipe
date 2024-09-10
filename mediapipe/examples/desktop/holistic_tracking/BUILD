@@ -13,4 +13,10 @@ cc_binary(
         "//mediapipe/examples/desktop:demo_run_graph_main",
         "//mediapipe/graphs/holistic_tracking:holistic_tracking_cpu_graph_deps"
     ],
+    linkopts = [
+        "ole32.lib",
+        "mfplat.lib",
+        "mf.lib",
+        "mfuuid.lib",  # for GUID definitions
+    ],
 )

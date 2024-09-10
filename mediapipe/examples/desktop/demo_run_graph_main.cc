@@ -14,6 +14,13 @@
 //
 // An example of sending OpenCV webcam frames into a MediaPipe graph.
 #include <cstdlib>
+#include <windows.h>
+#include <mfapi.h>
+#include <mfidl.h>
+#include <mfobjects.h>
+#include <mfplay.h>
+#include <mfreadwrite.h>
+#include <mferror.h>
 
 #include "absl/flags/flag.h"
 #include "absl/flags/parse.h"
@@ -41,6 +48,64 @@ ABSL_FLAG(std::string, input_video_path, "",
 ABSL_FLAG(std::string, output_video_path, "",
           "Full path of where to save result (.mp4 only). "
           "If not provided, show result in a window.");
+ABSL_FLAG(int, camera_index, 0, "Camera index to use (default is 0)");
+
+
+
+void EnumerateVideoCaptureDevices() {
+    IMFAttributes* pAttributes = NULL;
+    IMFActivate** ppDevices = NULL;
+    UINT32 deviceCount = 0;
+
+    // Create an attribute store to specify enumeration parameters.
+    HRESULT hr = MFCreateAttributes(&pAttributes, 1);
+    if (FAILED(hr)) {
+        std::cerr << "Failed to create attributes." << std::endl;
+        return;
+    }
+
+    // Request video capture devices.
+    hr = pAttributes->SetGUID(
+        MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE,
+        MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_GUID
+    );
+
+    if (FAILED(hr)) {
+        std::cerr << "Failed to set attribute source type." << std::endl;
+        pAttributes->Release();
+        return;
+    }
+
+    // Enumerate devices.
+    hr = MFEnumDeviceSources(pAttributes, &ppDevices, &deviceCount);
+
+    if (SUCCEEDED(hr)) {
+        for (UINT32 i = 0; i < deviceCount; i++) {
+            WCHAR* friendlyName = NULL;
+            UINT32 nameLength = 0;
+
+            hr = ppDevices[i]->GetAllocatedString(
+                MF_DEVSOURCE_ATTRIBUTE_FRIENDLY_NAME,
+                &friendlyName, 
+                &nameLength
+            );
+
+            if (SUCCEEDED(hr)) {
+                // Convert WCHAR* to std::wstring and then to std::string
+                std::wstring ws(friendlyName);
+                std::string deviceName(ws.begin(), ws.end());
+                std::cout << "Device " << i << ": " << deviceName << std::endl;
+                CoTaskMemFree(friendlyName);
+            }
+            ppDevices[i]->Release();
+        }
+        CoTaskMemFree(ppDevices);
+    } else {
+        std::cerr << "Failed to enumerate devices." << std::endl;
+    }
+    pAttributes->Release();
+}
+
 
 absl::Status RunMPPGraph() {
   std::string calculator_graph_config_contents;
@@ -63,7 +128,7 @@ absl::Status RunMPPGraph() {
   if (load_video) {
     capture.open(absl::GetFlag(FLAGS_input_video_path));
   } else {
-    capture.open(0);
+    capture.open(absl::GetFlag(FLAGS_camera_index));
   }
   RET_CHECK(capture.isOpened());
 
@@ -149,9 +214,36 @@ absl::Status RunMPPGraph() {
 }
 
 int main(int argc, char** argv) {
+  // Initialize logging and parse command line flags.
   google::InitGoogleLogging(argv[0]);
   absl::ParseCommandLine(argc, argv);
+
+  // Initialize COM library
+  HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+  if (FAILED(hr)) {
+    ABSL_LOG(ERROR) << "Failed to initialize COM library.";
+    return EXIT_FAILURE;
+  }
+
+  // Initialize Media Foundation
+  hr = MFStartup(MF_VERSION);
+  if (FAILED(hr)) {
+    ABSL_LOG(ERROR) << "Failed to initialize Media Foundation.";
+    CoUninitialize();
+    return EXIT_FAILURE;
+  }
+
+  EnumerateVideoCaptureDevices();
+
+  // Run the MediaPipe graph
   absl::Status run_status = RunMPPGraph();
+  
+  // Uninitialize Media Foundation
+  MFShutdown();
+  
+  // Uninitialize COM library
+  CoUninitialize();
+
   if (!run_status.ok()) {
     ABSL_LOG(ERROR) << "Failed to run the graph: " << run_status.message();
     return EXIT_FAILURE;
