@@ -113,3 +113,11 @@ node {
   input_stream : "IMAGE:throttled_input_video"
   output_stream : "IMAGE:cropped_cheek_image"
 }
+
+node {
+  calculator : "CheekLandmarkCpu"
+  input_stream : "IMAGE:cropped_cheek_image"
+  input_stream : "BLENDSHAPES:face_blendshapes"
+  output_stream : "BLENDSHAPES:face_blendshapes_updated"
+}
+

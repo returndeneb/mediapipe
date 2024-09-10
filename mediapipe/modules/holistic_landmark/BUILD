@@ -54,6 +54,7 @@ mediapipe_simple_subgraph(
         "//mediapipe/calculators/image:image_properties_calculator",
         "//mediapipe/modules/face_detection:face_detection_short_range_by_roi_cpu",
         "//mediapipe/modules/face_landmark:face_landmark_cpu",
+        "//mediapipe/modules/face_landmark:cheek_landmark_cpu",
         
     ],
 )

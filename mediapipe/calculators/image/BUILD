@@ -111,6 +111,26 @@ cc_library(
     alwayslink = 1,
 )
 
+cc_library(
+    name = "blend_shape_enhancer",
+    srcs = ["blend_shape_enhancer.cc"],
+    hdrs = ["blend_shape_enhancer.h"],
+    deps = [
+        "//mediapipe/framework:calculator_framework",        # Base framework for calculator implementations
+        # "//mediapipe/framework/formats:classification_proto",  # Classification proto for blend shapes
+        "//mediapipe/framework/formats:tensor",               # Tensor for handling tensor data 
+        "//mediapipe/framework/formats:image_frame",          # For image frame handling
+        "//mediapipe/framework/formats:image_frame_opencv",   # OpenCV support for image frame
+        "@com_google_absl//absl/log:absl_log",               # Abseil logging support
+        "//mediapipe/framework/port:status",                  # For status handling
+        "//mediapipe/framework/port:ret_check",               # For runtime checks
+    ],
+    visibility = ["//visibility:public"],                   # Set visibility public for accessibility
+    alwayslink = 1,                                        # Ensures it is always linked
+)
+
+
+
 
 cc_library(
     name = "color_convert_calculator",
