@@ -3,7 +3,7 @@
 
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/formats/landmark.pb.h"  // For NormalizedLandmarkList
-
+#include <opencv2/highgui.hpp>
 namespace mediapipe {
 
 class CheekCropCalculator : public CalculatorBase {

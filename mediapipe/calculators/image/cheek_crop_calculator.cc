@@ -32,7 +32,7 @@ namespace mediapipe {
     cv::Mat image = formats::MatView(&input_frame);
 
     if (landmark_list.landmark_size() <= 0) {
-        return ::mediapipe::UnknownError("No landmarks available.");  // Correct approach
+        return ::mediapipe::UnknownError("No landmarks available.");
     }
 
     int left_cheek_index = 192;  // Example indices; adjust according to your landmarks setup
@@ -46,8 +46,8 @@ namespace mediapipe {
     int center_x_right = static_cast<int>(right_cheek_landmark.x() * image.cols);
     int center_y_right = static_cast<int>(right_cheek_landmark.y() * image.rows);
 
-    cv::Rect left_cheek_rect(center_x_left - 50, center_y_left - 50, 100, 100);
-    cv::Rect right_cheek_rect(center_x_right - 50, center_y_right - 50, 100, 100);
+    cv::Rect left_cheek_rect(center_x_left - 25, center_y_left - 50, 50, 100);
+    cv::Rect right_cheek_rect(center_x_right - 25, center_y_right - 50, 50, 100);
 
     left_cheek_rect &= cv::Rect(0, 0, image.cols, image.rows);
     right_cheek_rect &= cv::Rect(0, 0, image.cols, image.rows);
@@ -55,9 +55,22 @@ namespace mediapipe {
     cv::Mat left_cheek = image(left_cheek_rect);
     cv::Mat right_cheek = image(right_cheek_rect);
 
-    cv::Mat combined_cheeks(100, 200, image.type());
+    cv::Mat combined_cheeks(100, 100, image.type());
     left_cheek.copyTo(combined_cheeks(cv::Rect(0, 0, left_cheek.cols, left_cheek.rows)));
-    right_cheek.copyTo(combined_cheeks(cv::Rect(100, 0, right_cheek.cols, right_cheek.rows)));
+    right_cheek.copyTo(combined_cheeks(cv::Rect(50, 0, right_cheek.cols, right_cheek.rows)));
+
+    // Display the original image with OpenCV
+    cv::imshow("Original Image", image);
+
+    // Display the left cheek and right cheek individually
+    cv::imshow("Left Cheek", left_cheek);
+    cv::imshow("Right Cheek", right_cheek);
+
+    // Display the combined cheeks
+    cv::imshow("Combined Cheeks", combined_cheeks);
+
+    // Wait for a keypress; necessary to keep the windows open
+    cv::waitKey(1); // Use a small value for real-time processing
 
     auto output_frame = absl::make_unique<ImageFrame>(
         input_frame.Format(), combined_cheeks.cols, combined_cheeks.rows);
