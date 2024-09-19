@@ -103,17 +103,29 @@ absl::Status InferenceCalculator::TensorContractCheck(CalculatorContract* cc) {
       << "Exactly one of TENSORS and TENSOR must be used for input.";
   RET_CHECK(kOutTensors(cc).IsConnected() ^ (kOutTensor(cc).Count() > 0))
       << "Exactly one of TENSORS and TENSOR must be used for output.";
+  
+  ABSL_LOG(INFO) << "TensorContractCheck successful. Tensors are connected properly.";
   return absl::OkStatus();
 }
 
+// Inference operation status logging and result checks.
 absl::StatusOr<Packet<TfLiteModelPtr>> InferenceCalculator::GetModelAsPacket(
     CalculatorContext* cc) {
   const auto& options = cc->Options<mediapipe::InferenceCalculatorOptions>();
   if (!options.model_path().empty()) {
-    return TfLiteModelLoader::LoadFromPath(options.model_path(),
+    auto model_packet = TfLiteModelLoader::LoadFromPath(options.model_path(),
                                            options.try_mmap_model());
+    if (!model_packet.ok()) {
+      ABSL_LOG(ERROR) << "Failed to load TFLite model from path: " << options.model_path();
+      return model_packet.status();
+    }
+    ABSL_LOG(INFO) << "TFLite model loaded successfully: " << options.model_path();
+    return model_packet;
   }
-  if (!kSideInModel(cc).IsEmpty()) return kSideInModel(cc);
+  if (!kSideInModel(cc).IsEmpty()) {
+    ABSL_LOG(INFO) << "Using model loaded from side input.";
+    return kSideInModel(cc);
+  }
   return absl::Status(absl::StatusCode::kNotFound,
                       "Must specify TFLite model as path or loaded model.");
 }
@@ -121,10 +133,13 @@ absl::StatusOr<Packet<TfLiteModelPtr>> InferenceCalculator::GetModelAsPacket(
 absl::StatusOr<Packet<tflite::OpResolver>>
 InferenceCalculator::GetOpResolverAsPacket(CalculatorContext* cc) {
   if (kSideInOpResolver(cc).IsConnected()) {
+    ABSL_LOG(INFO) << "Custom OpResolver used.";
     return kSideInOpResolver(cc).As<tflite::OpResolver>();
   } else if (kSideInCustomOpResolver(cc).IsConnected()) {
+    ABSL_LOG(INFO) << "Custom OpResolver used.";
     return kSideInCustomOpResolver(cc).As<tflite::OpResolver>();
   }
+  ABSL_LOG(INFO) << "Using default BuiltinOpResolver.";
   return PacketAdopting<tflite::OpResolver>(
       std::make_unique<
           tflite::ops::builtin::BuiltinOpResolverWithoutDefaultDelegates>());

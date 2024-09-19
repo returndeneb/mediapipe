@@ -44,30 +44,40 @@ absl::Status FaceBlendshapesPrinter::Process(CalculatorContext* cc) {
 
   float ratio = (width > 0) ? static_cast<float>(height) / width : 0; // Avoid division by zero
 
-    if (!cc->Inputs().Tag("POSE_LANDMARKS").IsEmpty()) {
+if (!cc->Inputs().Tag("POSE_LANDMARKS").IsEmpty()) {
     const auto& landmarks = cc->Inputs().Tag("POSE_LANDMARKS").Get<NormalizedLandmarkList>();
-    json_data["Body"] = BodyLandmarksToJson(landmarks,ratio);
-  }
+    json_data["Body"] = BodyLandmarksToJson(landmarks, ratio);
+} else {
+    json_data["Body"] = nullptr; // None equivalent in JSON
+}
 
-  if (!cc->Inputs().Tag("LEFT_HAND_LANDMARKS").IsEmpty()) {
+if (!cc->Inputs().Tag("LEFT_HAND_LANDMARKS").IsEmpty()) {
     const auto& left_hand_landmarks = cc->Inputs().Tag("LEFT_HAND_LANDMARKS").Get<NormalizedLandmarkList>();
-    json_data["LHand"] = HandLandmarksToJson(left_hand_landmarks,ratio);
-  }
+    json_data["LHand"] = HandLandmarksToJson(left_hand_landmarks, ratio);
+} else {
+    json_data["LHand"] = nullptr; // None equivalent in JSON
+}
 
-  if (!cc->Inputs().Tag("RIGHT_HAND_LANDMARKS").IsEmpty()) {
+if (!cc->Inputs().Tag("RIGHT_HAND_LANDMARKS").IsEmpty()) {
     const auto& right_hand_landmarks = cc->Inputs().Tag("RIGHT_HAND_LANDMARKS").Get<NormalizedLandmarkList>();
-    json_data["RHand"] = HandLandmarksToJson(right_hand_landmarks,ratio);
-  }
+    json_data["RHand"] = HandLandmarksToJson(right_hand_landmarks, ratio);
+} else {
+    json_data["RHand"] = nullptr; // None equivalent in JSON
+}
 
-  if (!cc->Inputs().Tag("FACE_LANDMARKS").IsEmpty()) {
+if (!cc->Inputs().Tag("FACE_LANDMARKS").IsEmpty()) {
     const auto& face_landmarks = cc->Inputs().Tag("FACE_LANDMARKS").Get<NormalizedLandmarkList>();
-    json_data["Face"] = FaceLandmarksToJson(face_landmarks,ratio,FACE_LANDMARKS);
-  }
+    json_data["Face"] = FaceLandmarksToJson(face_landmarks, ratio, FACE_LANDMARKS);
+} else {
+    json_data["Face"] = nullptr; // None equivalent in JSON
+}
 
-  if (!cc->Inputs().Tag("FACE_BLENDSHAPES").IsEmpty()) {
+if (!cc->Inputs().Tag("FACE_BLENDSHAPES").IsEmpty()) {
     const auto& blendshapes = cc->Inputs().Tag("FACE_BLENDSHAPES").Get<ClassificationList>();
     json_data["BlendShape"] = ClassificationListToJson(blendshapes);
-  }
+} else {
+    json_data["BlendShape"] = nullptr; // None equivalent in JSON
+}
 
 
 
