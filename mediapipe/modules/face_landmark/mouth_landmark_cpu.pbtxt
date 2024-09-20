@@ -1,0 +1,69 @@
+
+# EXAMPLE:
+# node {
+#  calculator : "MouthLandmarkCpu"
+#  input_stream : "IMAGE:cropped_cheek_image"
+#  input_stream : "BLENDSHAPES:face_blendshapes_updated"
+#  output_stream : "BLENDSHAPES:face_blendshapes_updated2"
+# }
+
+type: "MouthLandmarkCpu"
+
+
+input_stream: "IMAGE:cropped_mouth_image"
+input_stream: "BLENDSHAPES:face_blendshapes_updated"
+output_stream: "BLENDSHAPES:face_blendshapes_updated2"
+
+# Transforms the input image into a 64x64 tensor.
+node: {
+  calculator: "ImageToTensorCalculator"
+  input_stream: "IMAGE:cropped_mouth_image"
+  output_stream: "TENSORS:input_tensors"
+  options: {
+    [mediapipe.ImageToTensorCalculatorOptions.ext] {
+      output_tensor_width: 32
+      output_tensor_height: 32
+      output_tensor_float_range {
+        min: 0.0
+        max: 1.0
+      }
+    }
+  }
+}
+
+# Loads the face landmarks TF Lite model.
+node {
+  calculator: "MouthLandmarksModelLoader"
+  output_side_packet: "MODEL:model"
+}
+
+# Generates a single side packet containing a TensorFlow Lite op resolver that
+# supports custom ops needed by the model used in this graph.
+node {
+  calculator: "TfLiteCustomOpResolverCalculator"
+  output_side_packet: "OP_RESOLVER:op_resolver"
+}
+
+# Runs a TensorFlow Lite model on CPU that takes an image tensor and outputs a
+# vector of tensors representing, for instance, detection boxes/keypoints and
+# scores.
+node {
+  calculator: "InferenceCalculator"
+  input_stream: "TENSORS:input_tensors"
+  input_side_packet: "MODEL:model"
+  input_side_packet: "OP_RESOLVER:op_resolver"
+  output_stream: "TENSORS:output_tensors"
+  options: {
+    [mediapipe.InferenceCalculatorOptions.ext] {
+      delegate { xnnpack {} }
+    }
+  }
+}
+
+node{
+  calculator: "BlendShapeEnhancer2"
+  input_stream: "BLENDSHAPES:face_blendshapes_updated"
+  input_stream: "TENSORS:output_tensors"
+  output_stream: "BLENDSHAPES:face_blendshapes_updated2"
+}
+

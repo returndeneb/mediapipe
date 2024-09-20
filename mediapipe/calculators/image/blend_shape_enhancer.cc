@@ -36,7 +36,7 @@ namespace mediapipe {
         blendshapes.mutable_classification(8)->set_score(new_score);
 
         // Output the new score to stdout
-        std::cout << "Updated blendshape score at index 5: " << new_score << std::endl;
+        // std::cout << "Updated blendshape score at index 5: " << new_score << std::endl;
     }
 
     // Ensure the modified blendshapes are sent to the output

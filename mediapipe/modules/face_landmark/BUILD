@@ -85,6 +85,42 @@ mediapipe_simple_subgraph(
 
 
 mediapipe_simple_subgraph(
+    name = "mouth_landmark_cpu",
+    graph = "mouth_landmark_cpu.pbtxt",
+    register_as = "MouthLandmarkCpu",
+    deps = [
+        ":mouth_landmarks_model_loader",
+        ":tensors_to_face_landmarks",
+        ":tensors_to_face_landmarks_with_attention",
+        "//mediapipe/calculators/core:gate_calculator",
+        "//mediapipe/calculators/core:split_vector_calculator",
+        "//mediapipe/calculators/tensor:image_to_tensor_calculator",
+        "//mediapipe/calculators/tensor:inference_calculator",
+        "//mediapipe/calculators/tensor:tensors_to_floats_calculator",
+        "//mediapipe/calculators/tensor:tensors_to_landmarks_calculator",
+        "//mediapipe/calculators/tflite:tflite_custom_op_resolver_calculator",
+        "//mediapipe/calculators/util:landmark_projection_calculator",
+        "//mediapipe/calculators/util:thresholding_calculator",
+        "//mediapipe/framework/tool:switch_container",
+        "//mediapipe/calculators/image:blend_shape_enhancer2"
+    ],
+)
+
+
+mediapipe_simple_subgraph(
+    name = "mouth_landmarks_model_loader",
+    graph = "mouth_landmarks_model_loader.pbtxt",
+    register_as = "MouthLandmarksModelLoader",
+    deps = [
+        "//mediapipe/calculators/core:constant_side_packet_calculator",
+        "//mediapipe/calculators/tflite:tflite_model_calculator",
+        "//mediapipe/calculators/util:local_file_contents_calculator",
+        "//mediapipe/framework/tool:switch_container",
+    ],
+)
+
+
+mediapipe_simple_subgraph(
     name = "face_landmark_gpu",
     graph = "face_landmark_gpu.pbtxt",
     register_as = "FaceLandmarkGpu",

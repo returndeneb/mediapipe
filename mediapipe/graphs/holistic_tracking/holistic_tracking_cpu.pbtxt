@@ -78,7 +78,7 @@ node {
   input_stream: "LEFT_HAND_LANDMARKS:left_hand_landmarks"
   input_stream: "RIGHT_HAND_LANDMARKS:right_hand_landmarks"
   input_stream: "FACE_LANDMARKS:face_landmarks"
-  input_stream: "FACE_BLENDSHAPES:face_blendshapes_updated"
+  input_stream: "FACE_BLENDSHAPES:face_blendshapes_updated2"
   output_stream: "RENDER_DATA_VECTOR:render_data_vector"
 }
 
@@ -119,5 +119,19 @@ node {
   input_stream : "IMAGE:cropped_cheek_image"
   input_stream : "BLENDSHAPES:face_blendshapes"
   output_stream : "BLENDSHAPES:face_blendshapes_updated"
+}
+
+node {
+  calculator: "MouthCropCalculator"
+  input_stream : "LANDMARKS:face_landmarks"
+  input_stream : "IMAGE:throttled_input_video"
+  output_stream : "IMAGE:cropped_mouth_image"
+}
+
+node {
+  calculator : "MouthLandmarkCpu"
+  input_stream : "IMAGE:cropped_mouth_image"
+  input_stream : "BLENDSHAPES:face_blendshapes_updated"
+  output_stream : "BLENDSHAPES:face_blendshapes_updated2"
 }
 

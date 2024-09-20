@@ -112,6 +112,31 @@ cc_library(
 )
 
 cc_library(
+    name = "mouth_crop_calculator",
+    srcs = ["mouth_crop_calculator.cc"],
+    hdrs = ["mouth_crop_calculator.h"],
+    deps = [
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework/formats:landmark_cc_proto",
+        "//mediapipe/framework/formats:image_frame_opencv",
+        "//mediapipe/framework/port:opencv_core",
+        "//mediapipe/framework/port:opencv_imgproc",
+        "//mediapipe/framework/port:ret_check",
+        "//mediapipe/framework/port:status",
+        "@com_google_absl//absl/log:absl_log",
+    ] + select({
+        "//mediapipe/gpu:disable_gpu": [],
+        "//conditions:default": [
+            "//mediapipe/gpu:gl_calculator_helper",
+            "//mediapipe/gpu:gpu_buffer",
+        ],
+    }),
+    alwayslink = 1,
+)
+
+
+
+cc_library(
     name = "blend_shape_enhancer",
     srcs = ["blend_shape_enhancer.cc"],
     hdrs = ["blend_shape_enhancer.h"],
@@ -129,6 +154,24 @@ cc_library(
     alwayslink = 1,                                        # Ensures it is always linked
 )
 
+
+cc_library(
+    name = "blend_shape_enhancer2",
+    srcs = ["blend_shape_enhancer2.cc"],
+    hdrs = ["blend_shape_enhancer2.h"],
+    deps = [
+        "//mediapipe/framework:calculator_framework",        # Base framework for calculator implementations
+        # "//mediapipe/framework/formats:classification_proto",  # Classification proto for blend shapes
+        "//mediapipe/framework/formats:tensor",               # Tensor for handling tensor data 
+        "//mediapipe/framework/formats:image_frame",          # For image frame handling
+        "//mediapipe/framework/formats:image_frame_opencv",   # OpenCV support for image frame
+        "@com_google_absl//absl/log:absl_log",               # Abseil logging support
+        "//mediapipe/framework/port:status",                  # For status handling
+        "//mediapipe/framework/port:ret_check",               # For runtime checks
+    ],
+    visibility = ["//visibility:public"],                   # Set visibility public for accessibility
+    alwayslink = 1,                                        # Ensures it is always linked
+)
 
 
 

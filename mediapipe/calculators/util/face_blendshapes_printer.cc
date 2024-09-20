@@ -149,7 +149,7 @@ nlohmann::json FaceBlendshapesPrinter::ClassificationListToJson(const Classifica
     values.push_back(classification_list.classification(i).score());
   }
   
-  values.push_back(0.0f);
+//   values.push_back(0.0f);
   return values;
 }
 

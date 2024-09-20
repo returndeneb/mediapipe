@@ -55,6 +55,7 @@ mediapipe_simple_subgraph(
         "//mediapipe/modules/face_detection:face_detection_short_range_by_roi_cpu",
         "//mediapipe/modules/face_landmark:face_landmark_cpu",
         "//mediapipe/modules/face_landmark:cheek_landmark_cpu",
+        "//mediapipe/modules/face_landmark:mouth_landmark_cpu",
         
     ],
 )
@@ -271,5 +272,6 @@ mediapipe_simple_subgraph(
         "//mediapipe/modules/pose_landmark:pose_landmark_cpu",
         "//mediapipe/tasks/cc/vision/face_landmarker:face_blendshapes_graph",
         "//mediapipe/calculators/image:cheek_crop_calculator",
+        "//mediapipe/calculators/image:mouth_crop_calculator",
     ],
 )
