@@ -800,7 +800,7 @@ cc_library(
     srcs = ["face_blendshapes_printer.cc"],
     deps = [
         "//mediapipe/framework:calculator_framework", 
-        "//mediapipe/framework/formats:classification_cc_proto",  
+        "//mediapipe/framework/formats:classification_cc_proto", 
     ],
     alwayslink = 1,
 )

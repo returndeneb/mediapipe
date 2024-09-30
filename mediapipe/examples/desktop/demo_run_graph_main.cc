@@ -40,17 +40,14 @@ constexpr char kInputStream[] = "input_video";
 constexpr char kOutputStream[] = "output_video";
 constexpr char kWindowName[] = "MediaPipe";
 
-ABSL_FLAG(std::string, calculator_graph_config_file, "",
+ABSL_FLAG(std::string, calculator_graph_config_file, "holistic_tracking_cpu.pbtxt",
           "Name of file containing text format CalculatorGraphConfig proto.");
-ABSL_FLAG(std::string, input_video_path, "",
-          "Full path of video to load. "
-          "If not provided, attempt to use a webcam.");
-ABSL_FLAG(std::string, output_video_path, "",
-          "Full path of where to save result (.mp4 only). "
-          "If not provided, show result in a window.");
-ABSL_FLAG(int, camera_index, 0, "Camera index to use (default is 0)");
 
-
+ABSL_FLAG(int, id, 0, "Camera index to use (default is 0)");
+ABSL_FLAG(int, width, 640, "Camera resolution width");
+ABSL_FLAG(int, height, 480, "Camera resolution height");
+ABSL_FLAG(int, fps, 30, "Camera fps");
+ABSL_FLAG(int, port, 12500, "UDP port to Unity");
 
 void EnumerateVideoCaptureDevices() {
     IMFAttributes* pAttributes = NULL;
@@ -124,24 +121,16 @@ absl::Status RunMPPGraph() {
 
   ABSL_LOG(INFO) << "Initialize the camera or load the video.";
   cv::VideoCapture capture;
-  const bool load_video = !absl::GetFlag(FLAGS_input_video_path).empty();
-  if (load_video) {
-    capture.open(absl::GetFlag(FLAGS_input_video_path));
-  } else {
-    capture.open(absl::GetFlag(FLAGS_camera_index));
-  }
+  capture.open(absl::GetFlag(FLAGS_id),cv::CAP_DSHOW);
   RET_CHECK(capture.isOpened());
 
-  cv::VideoWriter writer;
-  const bool save_video = !absl::GetFlag(FLAGS_output_video_path).empty();
-  if (!save_video) {
-    cv::namedWindow(kWindowName, /*flags=WINDOW_AUTOSIZE*/ 1);
-#if (CV_MAJOR_VERSION >= 3) && (CV_MINOR_VERSION >= 2)
-    capture.set(cv::CAP_PROP_FRAME_WIDTH, 640);
-    capture.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-    capture.set(cv::CAP_PROP_FPS, 30);
-#endif
-  }
+  // GlobalConfig::Port = absl::GetFlag(FLAGS_port);
+
+  cv::namedWindow(kWindowName, /*flags=WINDOW_AUTOSIZE*/ 1);
+  capture.set(cv::CAP_PROP_FRAME_WIDTH, static_cast<double>(absl::GetFlag(FLAGS_width)));
+  capture.set(cv::CAP_PROP_FRAME_HEIGHT, static_cast<double>(absl::GetFlag(FLAGS_height)));
+  capture.set(cv::CAP_PROP_FPS, static_cast<double>(absl::GetFlag(FLAGS_fps)));
+
 
   ABSL_LOG(INFO) << "Start running the calculator graph.";
   MP_ASSIGN_OR_RETURN(mediapipe::OutputStreamPoller poller,
@@ -155,18 +144,14 @@ absl::Status RunMPPGraph() {
     cv::Mat camera_frame_raw;
     capture >> camera_frame_raw;
     if (camera_frame_raw.empty()) {
-      if (!load_video) {
-        ABSL_LOG(INFO) << "Ignore empty frames from camera.";
-        continue;
-      }
-      ABSL_LOG(INFO) << "Empty frame, end of video reached.";
-      break;
+      ABSL_LOG(INFO) << "Ignore empty frames from camera.";
+      continue;
     }
     cv::Mat camera_frame;
     cv::cvtColor(camera_frame_raw, camera_frame, cv::COLOR_BGR2RGB);
-    if (!load_video) {
-      cv::flip(camera_frame, camera_frame, /*flipcode=HORIZONTAL*/ 1);
-    }
+    // if (!load_video) {
+    //   cv::flip(camera_frame, camera_frame, /*flipcode=HORIZONTAL*/ 1);
+    // }
 
     // Wrap Mat into an ImageFrame.
     auto input_frame = absl::make_unique<mediapipe::ImageFrame>(
@@ -190,25 +175,13 @@ absl::Status RunMPPGraph() {
     // Convert back to opencv for display or saving.
     cv::Mat output_frame_mat = mediapipe::formats::MatView(&output_frame);
     cv::cvtColor(output_frame_mat, output_frame_mat, cv::COLOR_RGB2BGR);
-    if (save_video) {
-      if (!writer.isOpened()) {
-        ABSL_LOG(INFO) << "Prepare video writer.";
-        writer.open(absl::GetFlag(FLAGS_output_video_path),
-                    mediapipe::fourcc('a', 'v', 'c', '1'),  // .mp4
-                    capture.get(cv::CAP_PROP_FPS), output_frame_mat.size());
-        RET_CHECK(writer.isOpened());
-      }
-      writer.write(output_frame_mat);
-    } else {
-      cv::imshow(kWindowName, output_frame_mat);
-      // Press any key to exit.
-      const int pressed_key = cv::waitKey(5);
-      if (pressed_key >= 0 && pressed_key != 255) grab_frames = false;
-    }
+    cv::imshow(kWindowName, output_frame_mat);
+    // Press any key to exit.
+    const int pressed_key = cv::waitKey(5);
+    if (pressed_key >= 0 && pressed_key != 255) grab_frames = false;
   }
 
   ABSL_LOG(INFO) << "Shutting down.";
-  if (writer.isOpened()) writer.release();
   MP_RETURN_IF_ERROR(graph.CloseInputStream(kInputStream));
   return graph.WaitUntilDone();
 }

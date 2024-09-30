@@ -77,20 +77,14 @@ namespace mediapipe {
     // Resize to 32x32
     cv::resize(cropped_mouth, cropped_mouth, cv::Size(32, 32));
 
-    // Normalize the image to be in range [-1, 1]
-    cv::Mat normalized_cropped_mouth;
-    cropped_mouth.convertTo(normalized_cropped_mouth, CV_32F, 1.0 / 255.0);
-    normalized_cropped_mouth = (normalized_cropped_mouth - 0.5f) * 2.0f;
-
     auto output_frame = absl::make_unique<ImageFrame>(
         ImageFormat::SRGB, 32, 32);
     cv::Mat output_mat = formats::MatView(output_frame.get());
-    normalized_cropped_mouth.copyTo(output_mat);
+    cropped_mouth.copyTo(output_mat);
 
     cc->Outputs().Tag("IMAGE").Add(output_frame.release(), cc->InputTimestamp());
     return ::mediapipe::OkStatus();
 }
-
 
 REGISTER_CALCULATOR(MouthCropCalculator);
 

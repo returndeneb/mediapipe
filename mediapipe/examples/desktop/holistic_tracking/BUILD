@@ -1,7 +1,7 @@
 package(default_visibility = ["//mediapipe/examples:__subpackages__"])
 
 cc_binary(
-    name = "holistic_tracking_cpu",
+    name = "Avakit_video",
     data = [
         "//mediapipe/modules/face_landmark:face_landmark.tflite",
         "//mediapipe/modules/hand_landmark:hand_landmark_full.tflite",

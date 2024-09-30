@@ -60,7 +60,7 @@ namespace mediapipe {
 
     int face_width = x_max - x_min;
     int face_height = y_max - y_min;
-    int short_side = std::max(face_width, face_height) / 2;
+    int short_side = std::max(face_width, face_height) / 3;
     int long_side = short_side * 2;
 
     // Calculate the cropping coordinates for cheeks
@@ -90,21 +90,21 @@ namespace mediapipe {
 
     cv::resize(combined_cheeks, combined_cheeks, cv::Size(64, 64));
 
-    cv::imshow("Original Image", image);
-    cv::Mat combined_cheeks_rgb;
-    cv::cvtColor(combined_cheeks, combined_cheeks_rgb, cv::COLOR_BGR2RGB);
-    cv::imshow("Combined Cheeks", combined_cheeks_rgb);
+    // cv::imshow("Original Image", image);
+    // cv::Mat combined_cheeks_rgb;
+    // cv::cvtColor(combined_cheeks, combined_cheeks_rgb, cv::COLOR_BGR2RGB);
+    // cv::imshow("Combined Cheeks", combined_cheeks);
 
-    cv::Mat normalized_combined_cheeks;
-    combined_cheeks_rgb.convertTo(normalized_combined_cheeks, CV_32F, 1.0 / 255.0);
-    normalized_combined_cheeks = (normalized_combined_cheeks - 0.5f) * 2.0f;
+    // cv::Mat normalized_combined_cheeks;
+    // combined_cheeks.convertTo(normalized_combined_cheeks, CV_32F, 1.0 / 255.0);
+    // normalized_combined_cheeks = (normalized_combined_cheeks - 0.5f) * 2.0f;
 
-    cv::waitKey(1);
+    // cv::waitKey(1);
 
     auto output_frame = absl::make_unique<ImageFrame>(
         input_frame.Format(), combined_cheeks.cols, combined_cheeks.rows);
     cv::Mat output_mat = formats::MatView(output_frame.get());
-    normalized_combined_cheeks.copyTo(output_mat);
+    combined_cheeks.copyTo(output_mat);
 
     cc->Outputs().Tag("IMAGE").Add(output_frame.release(), cc->InputTimestamp());
     return ::mediapipe::OkStatus();

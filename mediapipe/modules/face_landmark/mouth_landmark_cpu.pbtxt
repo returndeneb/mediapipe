@@ -14,7 +14,7 @@ input_stream: "IMAGE:cropped_mouth_image"
 input_stream: "BLENDSHAPES:face_blendshapes_updated"
 output_stream: "BLENDSHAPES:face_blendshapes_updated2"
 
-# Transforms the input image into a 64x64 tensor.
+# Transforms the input image into a 32x32 tensor.
 node: {
   calculator: "ImageToTensorCalculator"
   input_stream: "IMAGE:cropped_mouth_image"
@@ -24,7 +24,7 @@ node: {
       output_tensor_width: 32
       output_tensor_height: 32
       output_tensor_float_range {
-        min: 0.0
+        min: -1.0
         max: 1.0
       }
     }

@@ -1,17 +1,20 @@
+#include "mediapipe/calculators/util/global_config.h"
 #include "face_blendshapes_printer.h"
 #include <iostream>
 #include <mediapipe/util/json.hpp>
 #include "mediapipe/framework/formats/landmark.pb.h"
 #include "mediapipe/framework/formats/rect.pb.h"
+#include "absl/flags/flag.h"
 
 #include <winsock2.h> // For Windows sockets
 #include <ws2tcpip.h> // For inet_pton
 #include <string>
 
-
 #pragma comment(lib, "ws2_32.lib") // Link against Winsock library
 
 namespace mediapipe {
+
+// extern int getUDPport();
 
 const std::vector<int> FaceBlendshapesPrinter::FACE_LANDMARKS = {
     10, 297, 284, 389, 454, 361, 397, 378, 152, 149, 172, 132,
@@ -102,6 +105,7 @@ if (!cc->Inputs().Tag("FACE_BLENDSHAPES").IsEmpty()) {
 
     // Set up the server address
     server_addr.sin_family = AF_INET;
+
     server_addr.sin_port = htons(12500);
     inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
 
@@ -116,7 +120,7 @@ if (!cc->Inputs().Tag("FACE_BLENDSHAPES").IsEmpty()) {
         WSACleanup();
         return absl::UnknownError("Failed to send data.");
     } else {
-        std::cout << "Sent " << send_result << " bytes to UDP port 12500." << std::endl;
+        // std::cout << "Sent " << send_result << " bytes to UDP port 12500." << std::endl;
     }
 
     // Cleanup
@@ -142,15 +146,60 @@ nlohmann::json FaceBlendshapesPrinter::NormalizedLandmarkListToJson(const Normal
   return json_landmarks;
 }
 
+float clip(float n, float lower, float upper) {
+    return std::max(lower, std::min(n, upper));
+}
+
 nlohmann::json FaceBlendshapesPrinter::ClassificationListToJson(const ClassificationList& classification_list) const {
-  std::vector<float> values;
+    std::vector<float> values;
+
     // Start from the second element and populate the `values` vector.
-  for (size_t i = 1; i < classification_list.classification_size(); ++i) {
-    values.push_back(classification_list.classification(i).score());
-  }
-  
-//   values.push_back(0.0f);
-  return values;
+    for (size_t i = 1; i < classification_list.classification_size(); ++i) {
+        values.push_back(classification_list.classification(i).score());
+    }
+
+    // Define the pairs of indices to swap based on starting from index 1 of classification_list.
+    std::vector<std::pair<int, int>> swap_pairs = {
+        {0, 1}, {3, 4}, {6, 7}, {8, 9}, {10, 11},
+        {12, 13}, {14, 15}, {16, 17}, {18, 19}, {20, 21},
+        {23, 25}, {27, 28}, {29, 30}, {32, 38}, {33, 34},
+        {35, 36}, {43, 44}, {45, 46}, {47, 48}, {49, 50}
+    };
+
+    // Swap the elements in the vector based on the adjusted index pairs.
+    for(auto& pair : swap_pairs) {
+        std::swap(values[pair.first], values[pair.second]);
+    }
+
+        std::vector<float> a = {
+        1.8, 2.0, 1.0, 2.5, 1.3, 1.0, 1.0, 1.0, 1.3, 1.3, 
+        1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.3, 1.6, 
+        3.0, 1.5, 1.0, 0.8, 1.3, 0.8, 1.5, 1.0, 1.0, 2.5, 
+        2.5, 1.3, 0.8, 1.0, 2.0, 2.0, 2.0, 1.2, 0.8, 0.6,
+        0.6, 1.4, 10, 2.0, 2.0, 0.3, 0.3, 7.0, 7.0, 0.0, 
+        0.0, 1.0
+    };
+
+    std::vector<float> b = {
+        0.0, 0.0, 0.0, -0.5, -0.3, 0.0, 0.0, 0.0, -0.2, -0.2, 
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.2, -0.2, 
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+        0.0, 0.0, -0.1, 0.0, 0.0, 0.0, 0.0, -0.2, 0.0, 0.0,
+        0.0, -0.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+        0.0, 0.0
+    };
+
+    // Apply the adjustment and clip the results
+    for (size_t i = 0; i < values.size(); ++i) {
+        values[i] = clip(values[i] * a[i] + b[i], 0.0f, 0.9f);
+    }
+
+    // Optionally, debug print to ensure swapping worked
+    // std::cout << "Blendshape swapped: " << values[50] << std::endl;
+
+    // Convert `values` to a JSON array and return
+    nlohmann::json json_values = values;
+    return json_values;
 }
 
 // Converts body landmarks to JSON (update to be a member function)
