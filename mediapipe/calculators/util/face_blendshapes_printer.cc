@@ -196,8 +196,10 @@ nlohmann::json FaceBlendshapesPrinter::ClassificationListToJson(const Classifica
     }
 
     values[24] = clip(values[24] + values[51]*0.8, 0.0f, 1.0f);
-    values[50] = clip(values[50] + values[51]*0.8, 0.0f, 1.0f);
-    values[49] = clip(values[49] + values[51]*0.8, 0.0f, 1.0f);
+    values[50] = clip(values[50] + values[51], 0.0f, 1.0f);
+    values[49] = clip(values[49] + values[51], 0.0f, 1.0f);
+    values[31] = clip(values[31] - values[51]*0.8, 0.0f, 1.0f);
+    values[37] = clip(values[37] - values[51]*0.8, 0.0f, 1.0f);
 
     // Optionally, debug print to ensure swapping worked
     // std::cout << "Blendshape swapped: " << values[24] << std::endl;

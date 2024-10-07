@@ -209,6 +209,8 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  // ShowWindow(GetConsoleWindow(), SW_HIDE);
+
   EnumerateVideoCaptureDevices();
 
   // Run the MediaPipe graph
@@ -228,3 +230,4 @@ int main(int argc, char** argv) {
   }
   return EXIT_SUCCESS;
 }
+
