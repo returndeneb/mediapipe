@@ -45,7 +45,8 @@ namespace mediapipe {
     int x_min = image.cols, x_max = 0, y_min = image.rows, y_max = 0;
 
     // Indices for landmarks around the mouth.
-    std::vector<int> face_landmark_indices = {432, 214, 164, 200};
+    std::vector<int> face_landmark_indices = {78, 95, 88, 186, 178, 87, 14, 317, 402, 318, 324, 308, 
+                                      191, 80, 81, 82, 13, 312};
 
     for (int index : face_landmark_indices) {
         const auto& landmark = landmark_list.landmark(index);
@@ -75,10 +76,12 @@ namespace mediapipe {
     cv::Mat cropped_mouth = image(cv::Rect(start_x, start_y, end_x - start_x, end_y - start_y));
 
     // Resize to 32x32
-    cv::resize(cropped_mouth, cropped_mouth, cv::Size(32, 32));
+    cv::resize(cropped_mouth, cropped_mouth, cv::Size(96, 96));
+    cv::cvtColor(cropped_mouth, cropped_mouth, cv::COLOR_RGB2BGR);
+
 
     auto output_frame = absl::make_unique<ImageFrame>(
-        ImageFormat::SRGB, 32, 32);
+        ImageFormat::SRGB, 96, 96);
     cv::Mat output_mat = formats::MatView(output_frame.get());
     cropped_mouth.copyTo(output_mat);
 

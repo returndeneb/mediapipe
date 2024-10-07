@@ -83,8 +83,6 @@ if (!cc->Inputs().Tag("FACE_BLENDSHAPES").IsEmpty()) {
     json_data["BlendShape"] = nullptr; // None equivalent in JSON
 }
 
-
-
     // UDP Sending Section
     SOCKET sockfd;
     sockaddr_in server_addr;
@@ -173,9 +171,9 @@ nlohmann::json FaceBlendshapesPrinter::ClassificationListToJson(const Classifica
     }
 
         std::vector<float> a = {
-        1.8, 2.0, 1.0, 2.5, 1.3, 1.0, 1.0, 1.0, 1.3, 1.3, 
+        1.8, 2.0, 1.0, 5.0, 2.5, 1.0, 1.0, 1.0, 1.3, 1.3, 
         1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.3, 1.6, 
-        3.0, 1.5, 1.0, 0.8, 1.3, 0.8, 1.5, 1.0, 1.0, 2.5, 
+        6.0, 4.0, 1.0, 0.8, 1.3, 0.8, 1.5, 1.0, 1.0, 2.5, 
         2.5, 1.3, 0.8, 1.0, 2.0, 2.0, 2.0, 1.2, 0.8, 0.6,
         0.6, 1.4, 10, 2.0, 2.0, 0.3, 0.3, 7.0, 7.0, 0.0, 
         0.0, 1.0
@@ -190,13 +188,19 @@ nlohmann::json FaceBlendshapesPrinter::ClassificationListToJson(const Classifica
         0.0, 0.0
     };
 
+    
+
     // Apply the adjustment and clip the results
     for (size_t i = 0; i < values.size(); ++i) {
-        values[i] = clip(values[i] * a[i] + b[i], 0.0f, 0.9f);
+        values[i] = clip(values[i] * a[i] + b[i], 0.0f, 1.0f);
     }
 
+    values[24] = clip(values[24] + values[51]*0.8, 0.0f, 1.0f);
+    values[50] = clip(values[50] + values[51]*0.8, 0.0f, 1.0f);
+    values[49] = clip(values[49] + values[51]*0.8, 0.0f, 1.0f);
+
     // Optionally, debug print to ensure swapping worked
-    std::cout << "Blendshape swapped: " << values[5] << std::endl;
+    // std::cout << "Blendshape swapped: " << values[24] << std::endl;
 
     // Convert `values` to a JSON array and return
     nlohmann::json json_values = values;

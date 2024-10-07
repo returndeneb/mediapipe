@@ -80,7 +80,7 @@ namespace mediapipe {
     cv::Rect mouth_rect(crop_x_min, crop_y_min, crop_x_max - crop_x_min, crop_y_max - crop_y_min);
     cv::Mat mouth_cropped = image(mouth_rect);
     cv::resize(mouth_cropped, mouth_cropped, cv::Size(64, 64));
-
+    
     // Prepare the output frame
     auto output_frame = absl::make_unique<ImageFrame>(
         input_frame.Format(), mouth_cropped.cols, mouth_cropped.rows);
@@ -88,8 +88,8 @@ namespace mediapipe {
     mouth_cropped.copyTo(output_mat);
 
 
-    cv::imshow("Original Image", image);
-    cv::imshow("Combined Cheeks", mouth_cropped);
+    // cv::imshow("Original Image", image);
+    // cv::imshow("Combined Cheeks", mouth_cropped);
 
     cv::waitKey(1);
 

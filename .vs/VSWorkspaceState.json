@@ -1,0 +1,10 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\mediapipe",
+    "\\mediapipe\\examples",
+    "\\mediapipe\\examples\\desktop"
+  ],
+  "SelectedNode": "\\mediapipe\\examples\\desktop\\demo_run_graph_main.cc",
+  "PreviewInSolutionExplorer": false
+}

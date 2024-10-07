@@ -126,7 +126,7 @@ absl::Status RunMPPGraph() {
 
   // GlobalConfig::Port = absl::GetFlag(FLAGS_port);
 
-  cv::namedWindow(kWindowName, /*flags=WINDOW_AUTOSIZE*/ 1);
+  // cv::namedWindow(kWindowName, /*flags=WINDOW_AUTOSIZE*/ 1);
   capture.set(cv::CAP_PROP_FRAME_WIDTH, static_cast<double>(absl::GetFlag(FLAGS_width)));
   capture.set(cv::CAP_PROP_FRAME_HEIGHT, static_cast<double>(absl::GetFlag(FLAGS_height)));
   capture.set(cv::CAP_PROP_FPS, static_cast<double>(absl::GetFlag(FLAGS_fps)));
@@ -173,12 +173,12 @@ absl::Status RunMPPGraph() {
     auto& output_frame = packet.Get<mediapipe::ImageFrame>();
 
     // Convert back to opencv for display or saving.
-    cv::Mat output_frame_mat = mediapipe::formats::MatView(&output_frame);
-    cv::cvtColor(output_frame_mat, output_frame_mat, cv::COLOR_RGB2BGR);
-    cv::imshow(kWindowName, output_frame_mat);
+    // cv::Mat output_frame_mat = mediapipe::formats::MatView(&output_frame);
+    // cv::cvtColor(output_frame_mat, output_frame_mat, cv::COLOR_RGB2BGR);
+    // cv::imshow(kWindowName, output_frame_mat);
     // Press any key to exit.
-    const int pressed_key = cv::waitKey(5);
-    if (pressed_key >= 0 && pressed_key != 255) grab_frames = false;
+    // const int pressed_key = cv::waitKey(5);
+    // if (pressed_key >= 0 && pressed_key != 255) grab_frames = false;
   }
 
   ABSL_LOG(INFO) << "Shutting down.";
@@ -192,7 +192,6 @@ int main(int argc, char** argv) {
   absl::ParseCommandLine(argc, argv);
   std::string executor_value = absl::GetFlag(FLAGS_executor);
   if (executor_value != "AvaKit") {
-      std::cout << "The executor value is not 'AvaKit'. It is: " << executor_value << std::endl;
       return EXIT_FAILURE;
   }
   // Initialize COM library

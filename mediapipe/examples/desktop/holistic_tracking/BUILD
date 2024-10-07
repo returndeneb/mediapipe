@@ -17,6 +17,6 @@ cc_binary(
         "ole32.lib",
         "mfplat.lib",
         "mf.lib",
-        "mfuuid.lib",  # for GUID definitions
+        "mfuuid.lib",
     ],
 )
