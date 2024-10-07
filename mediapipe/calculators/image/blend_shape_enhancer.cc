@@ -30,7 +30,7 @@ namespace mediapipe {
     // Assume blendshapes contains at least 6 entries and tensor_data is not empty
     if (blendshapes.classification_size() > 6 && tensor_data != nullptr) {
         // Update the 5th index with a value from tensor_data
-        float new_score = tensor_data[0];
+        float new_score = tensor_data[0]*0.55;
         blendshapes.mutable_classification(6)->set_score(new_score);
         blendshapes.mutable_classification(7)->set_score(new_score);
         blendshapes.mutable_classification(8)->set_score(new_score);

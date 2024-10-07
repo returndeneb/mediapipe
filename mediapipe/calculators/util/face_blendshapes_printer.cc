@@ -1,4 +1,3 @@
-#include "mediapipe/calculators/util/global_config.h"
 #include "face_blendshapes_printer.h"
 #include <iostream>
 #include <mediapipe/util/json.hpp>
@@ -195,7 +194,7 @@ nlohmann::json FaceBlendshapesPrinter::ClassificationListToJson(const Classifica
     }
 
     // Optionally, debug print to ensure swapping worked
-    // std::cout << "Blendshape swapped: " << values[50] << std::endl;
+    std::cout << "Blendshape swapped: " << values[5] << std::endl;
 
     // Convert `values` to a JSON array and return
     nlohmann::json json_values = values;
